@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Special Pancake</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="page-shell">
+      <header class="hero">
+        <p class="eyebrow">special-pancake / github pages</p>
+        <h1>Stamp an image with a deactivated account banner.</h1>
+        <p class="lede">
+          Upload any image, keep the original framing, and export a PNG with
+          <span>deactivated-account.png</span> locked to the bottom edge.
+        </p>
+      </header>
+
+      <main class="workspace">
+        <section class="panel controls-panel">
+          <div class="section-head">
+            <p class="section-kicker">Input</p>
+            <h2>Choose a source image</h2>
+          </div>
+
+          <label class="dropzone" for="source-image">
+            <input id="source-image" type="file" accept="image/*" />
+            <span class="dropzone-title">Drop an image here or browse</span>
+            <span class="dropzone-copy">
+              JPG, PNG, WEBP, GIF. The composite is exported as PNG.
+            </span>
+          </label>
+
+          <div class="action-row">
+            <button id="download-button" class="primary-button" type="button" disabled>
+              Download Composite
+            </button>
+            <button id="reset-button" class="ghost-button" type="button" disabled>
+              Reset
+            </button>
+          </div>
+
+          <p id="status-text" class="status-text" aria-live="polite">
+            Waiting for an image.
+          </p>
+
+          <div class="badge-preview">
+            <div>
+              <p class="section-kicker">Overlay</p>
+              <h3>Included badge</h3>
+            </div>
+            <img
+              src="deactivated-account.png"
+              alt="Deactivated account badge"
+              width="342"
+              height="88"
+            />
+          </div>
+        </section>
+
+        <section class="panel preview-panel">
+          <div class="section-head">
+            <p class="section-kicker">Output</p>
+            <h2>Live preview</h2>
+          </div>
+
+          <div class="preview-frame">
+            <div id="empty-state" class="empty-state">
+              <p>No image loaded yet.</p>
+              <span>The preview appears here as soon as you upload a file.</span>
+            </div>
+            <canvas id="preview-canvas" hidden></canvas>
+          </div>
+
+          <div class="output-notes">
+            <p>Original aspect ratio is preserved.</p>
+            <p>The overlay is centered and pinned to the bottom edge.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
