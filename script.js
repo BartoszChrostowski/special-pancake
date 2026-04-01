@@ -22,10 +22,10 @@ async function initialize() {
 
   try {
     state.overlayImage = await loadImage("deactivated-account.png");
-    setStatus("Waiting for an image.");
+    setStatus("No image selected.");
   } catch (error) {
     console.error(error);
-    setStatus("Could not load deactivated-account.png.");
+    setStatus("Overlay image could not be loaded.");
   }
 }
 
@@ -69,12 +69,12 @@ async function onFileChange(event) {
 
 async function loadSourceFile(file) {
   if (!file.type.startsWith("image/")) {
-    setStatus("Please choose an image file.");
+    setStatus("Choose an image file.");
     return;
   }
 
   if (!state.overlayImage) {
-    setStatus("The overlay image is not ready yet.");
+    setStatus("Overlay image is not ready.");
     return;
   }
 
@@ -90,7 +90,7 @@ async function loadSourceFile(file) {
     state.sourceObjectUrl = objectUrl;
     state.sourceFileName = file.name.replace(/\.[^.]+$/, "") || "image";
     renderComposite();
-    setStatus(`Loaded ${file.name}.`);
+    setStatus(file.name);
     emptyState.hidden = true;
     canvas.hidden = false;
     downloadButton.disabled = false;
@@ -99,7 +99,7 @@ async function loadSourceFile(file) {
     console.error(error);
     URL.revokeObjectURL(objectUrl);
     state.sourceObjectUrl = null;
-    setStatus("That image could not be processed.");
+    setStatus("Could not read image.");
   }
 }
 
@@ -114,17 +114,12 @@ function renderComposite() {
 
   context.clearRect(0, 0, width, height);
   context.drawImage(state.sourceImage, 0, 0, width, height);
+  applyGrayscale(width, height);
 
-  const horizontalPadding = Math.round(width * 0.04);
-  const maxOverlayWidth = Math.max(1, width - horizontalPadding * 2);
-  const preferredOverlayWidth = Math.max(
-    state.overlayImage.width,
-    Math.round(width * 0.58)
-  );
-  const overlayWidth = Math.min(maxOverlayWidth, preferredOverlayWidth);
+  const overlayWidth = width;
   const overlayScale = overlayWidth / state.overlayImage.width;
   const overlayHeight = Math.round(state.overlayImage.height * overlayScale);
-  const overlayX = Math.round((width - overlayWidth) / 2);
+  const overlayX = 0;
   const overlayY = height - overlayHeight;
 
   context.drawImage(
@@ -154,7 +149,7 @@ function downloadComposite() {
       anchor.download = `${state.sourceFileName || "image"}-deactivated.png`;
       anchor.click();
       URL.revokeObjectURL(downloadUrl);
-      setStatus("Composite downloaded.");
+      setStatus("Downloaded.");
     },
     "image/png",
     1
@@ -175,11 +170,29 @@ function resetWorkspace() {
   emptyState.hidden = false;
   downloadButton.disabled = true;
   resetButton.disabled = true;
-  setStatus("Waiting for an image.");
+  setStatus("No image selected.");
 }
 
 function setStatus(message) {
   statusText.textContent = message;
+}
+
+function applyGrayscale(width, height) {
+  const imageData = context.getImageData(0, 0, width, height);
+  const { data } = imageData;
+
+  for (let index = 0; index < data.length; index += 4) {
+    const red = data[index];
+    const green = data[index + 1];
+    const blue = data[index + 2];
+    const grayscale = Math.round(red * 0.299 + green * 0.587 + blue * 0.114);
+
+    data[index] = grayscale;
+    data[index + 1] = grayscale;
+    data[index + 2] = grayscale;
+  }
+
+  context.putImageData(imageData, 0, 0);
 }
 
 function loadImage(source) {
